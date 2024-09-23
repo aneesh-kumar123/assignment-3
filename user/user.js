@@ -1,18 +1,9 @@
-// Create a Contact App with following entities as per the UML given in the example:
-// User , Contacts and Contact Details
-// User will have two roles: Admin or Staff
-// Following are the features for Admin:
-// CRUD on users
-// Following are the features for Staff:
-// CRUD on Contact and Contact Details
+
 const Contact = require('../contact/contact.js');
 const ContactDetail = require('../contactDetail/contactDetail.js');
 
-// If an entity is deleted, the app sets the isActive flag to false
-// If isActive flag of user is false; he/she cannot perform CRUD on any entities
 class User {
 
-  //create constructor with parameter userid,firstName,lastNmae,isAdmin,isActive,contact
   static #allusers = []
   static userId = 0
   constructor(firstName, lastNmae, isAdmin) {
@@ -51,11 +42,11 @@ class User {
 
   newStaff(firstName, lastName) {
     try {
-      //check this is admin or not only admin can create newstaff
+      
       if (this.isAdmin == false) {
         throw new Error("only admin can create new staff")
       }
-      //now validate firstname and lastname
+      
       if (typeof firstName != "string") {
         throw new Error("firstname should be string")
       }
@@ -66,9 +57,9 @@ class User {
       if (firstName == lastName) {
         throw new Error("firstname and lastname should not be same")
       }
-      //now create new user
+     
       let newStaff = new User(firstName, lastName, false)
-      //now add to allusers
+  
       User.#allusers.push(newStaff)
 
       return newStaff
@@ -223,7 +214,8 @@ class User {
         throw new Error("only staff can fetch all detail")
 
       }
-      return Contact.getAllContact()
+      // return Contact.getAllContact()
+      return this.contact.filter(contact => contact.isActive)
     }
     catch (error) {
       console.log(error)
@@ -236,7 +228,8 @@ class User {
         throw new Error("only staff can fetch detail  by id")
 
       }
-      return Contact.getContactById(contId)
+      // return Contact.getContactById(contId)
+      return this.contact.find(contact => contact.contactId == contId && contact.isActive);
     }
     catch (error) {
       console.log(error)
@@ -266,11 +259,13 @@ class User {
 
   updateContactById(contId, parameter, value) {
     try {
-      if (this.isAdmin == true) {
-        throw new Error("only staff can update contact")
+      // if (this.isAdmin == true) {
+      //   throw new Error("only staff can update contact")
 
-      }
-      Contact.updateContactById(contId, parameter, value)
+      // }
+      let contactObj=this.getContactById(contId)
+      contactObj.updateContactById(parameter,value)
+      // Contact.updateContactById(contId, parameter, value)
 
     }
     catch (error) {
@@ -280,11 +275,15 @@ class User {
 
   deleteContactById(contId) {
     try {
-      if (this.isAdmin == true) {
-        throw new Error("only staff can delete contact")
+      // if (this.isAdmin == true) {
+      //   throw new Error("only staff can delete contact")
 
-      }
-      Contact.deleteContactById(contId)
+      // }
+      let contactObj=this.getContactById(contId)
+      contactObj.deleteContactById()
+
+
+      // Contact.deleteContactById(contId)
 
     }
     catch (error) {
@@ -294,13 +293,29 @@ class User {
 
   //now staff operation on contactDetail
 
+  getContactDetailByContactId(contactId,contactDetailId)
+  {
+    try{
+      if(this.isAdmin==true)
+      {
+        throw new Error("only staff can get contactDetail")
+      }
+      let contactObj=this.getContactById(contactId)
+      return contactObj.getContactDetailById(contactDetailId)
+    }
+    catch(error)
+    {
+      console.log(error)
+    }
+  }
+
   getAllContactDetail() {
     try {
       if (this.isAdmin == true) {
         throw new Error("only staff can get all contactDetail")
 
       }
-      return ContactDetail.getAllcontactDetail()
+      return this.contact;
 
     }
     catch (error) {
@@ -314,7 +329,9 @@ class User {
         throw new Error("only staff can get all contactDetail")
 
       }
-      return ContactDetail.getContactDetailById(contactDetailId)
+      let conttactDetailObject =this.getContactById(contactDetailId)
+      return conttactDetailObject.getAllContactDetail()
+      
     }
     catch (error) {
       console.log(error)
@@ -325,18 +342,18 @@ class User {
       if (this.isAdmin == true) {
         throw new Error("only staff can create contactDetail")
       }
-      let contact = Contact.getContactById(contId)
-      if (!contact) {
-        throw new Error("Contact not found for this contact detail.");
-      }
+      let contact = this.getContactById(contId)
+      // if (!contact) {
+      //   throw new Error("Contact not found for this contact detail.");
+      // }
       let newContactDetail = ContactDetail.createContactDetail(contId, type, value)
       if (!newContactDetail) {
         throw new Error("contact detail not created")
       }
-      if (!contact.contactDetail) {
-        contact.contactDetail = [];
-    }
-       contact.contactDetail.push(newContactDetail)
+    //   if (!contact.contactDetail) {
+    //     contact.contactDetail = [];
+    // }
+      contact.contactDetail.push(newContactDetail)
       return newContactDetail
     }
     catch (error) {
@@ -345,32 +362,35 @@ class User {
 
   }
 
-  updateContactDetail(contactDetailId, type, value) {
+  updateContactDetail(contactId,contactDetailId, type, value) {
     try {
       if (this.isAdmin == true) {
         throw new Error("only staff can update contactDetail")
       }
-      let contactDetail = ContactDetail.getContactDetailById(contactDetailId)
-      if (!contactDetail) {
+      // let contactDetail = ContactDetail.getContactDetailById(contactDetailId)
+      let contactDetailObject=this.getContactDetailByContactId(contactId,contactDetailId)
+      if (!contactDetailObject) {
         throw new Error("Contact detail not found.");
       }
-      let updatedContactDetail = ContactDetail.updateContactDetail(contactDetailId, type, value)
-      if (!updatedContactDetail) {
-        throw new Error("contact detail not updated")
-      }
-      return updatedContactDetail
+     contactDetailObject.updateContactDetail(type, value)
+
 
     }
     catch (error) {
       console.log(error)
     }
   }
-  deleteContactDetail(contactDetailId) {
+  deleteContactDetail(contactId,contactDetailId) {
     try {
       if (this.isAdmin == true) {
         throw new Error("only staff can delete contactDetail")
       }
-      ContactDetail.getContactDetailById(contactDetailId)
+      // ContactDetail.getContactDetailById(contactDetailId)
+      let contactDetailObject=this.getContactDetailByContactId(contactId,contactDetailId)
+      if (!contactDetailObject) {
+        throw new Error("Contact detail not found.");
+      }
+      contactDetailObject.deleteContactDetail()
     }
     catch (error) {
       console.log(error)

@@ -1,18 +1,8 @@
-// Create a Contact App with following entities as per the UML given in the example:
-// User , Contacts and Contact Details
-// User will have two roles: Admin or Staff
-// Following are the features for Admin:
-// CRUD on users
-// Following are the features for Staff:
-// CRUD on Contact and Contact Details
 
-// If an entity is deleted, the app sets the isActive flag to false
-// If isActive flag of user is false; he/she cannot perform CRUD on any entities
 class ContactDetail {
   static #allcontactDetail = []
   static contactDetailId = 0
 
-  //paramter in contructor is 
   constructor(contactId, type, value) {
     this.contactId = contactId
     this.type = type
@@ -23,7 +13,7 @@ class ContactDetail {
   }
 
   static validatePhone(value) {
-    //validate phone number
+    
     try {
       if (typeof value != "string") {
         throw new Error("Invalid phone number string")
@@ -59,9 +49,7 @@ class ContactDetail {
 
   static createContactDetail(contactId, type, value) {
     try {
-      //validate contactid
-      //validate type like phone or email
-      //validate value if phone then function to validate number,if type email then validate email
+      
       if (typeof contactId != "number") {
         throw new Error("contactId should be number")
       }
@@ -82,7 +70,7 @@ class ContactDetail {
       if (newContactDetail == undefined) {
         throw new Error("Invalid contact detail")
       }
-      ContactDetail.#allcontactDetail.push(newContactDetail)
+      // ContactDetail.#allcontactDetail.push(newContactDetail)
       return newContactDetail
     }
     catch (error) {
@@ -91,28 +79,28 @@ class ContactDetail {
 
   }
 
-  static getAllcontactDetail() {
-    return ContactDetail.#allcontactDetail.filter(detail => detail.isActive)
-  }
-  static getContactDetailById(contactDetailId) {
-    try {
-      if (typeof contactDetailId != "number") {
-        throw new Error("contactDetailId should be number")
-      }
-      let contactDetail = ContactDetail.#allcontactDetail.find(detail => detail.contactDetailId == contactDetailId && detail.isActive)
-      if (contactDetail == undefined) {
-        throw new Error("contactDetail not found")
-      }
-      return contactDetail
-    }
-    catch (error) {
-      console.log(error)
-    }
-  }
+  // static getAllcontactDetail() {
+  //   return ContactDetail.#allcontactDetail.filter(detail => detail.isActive)
+  // }
+  // static getContactDetailById(contactDetailId) {
+  //   try {
+  //     if (typeof contactDetailId != "number") {
+  //       throw new Error("contactDetailId should be number")
+  //     }
+  //     let contactDetail = ContactDetail.#allcontactDetail.find(detail => detail.contactDetailId == contactDetailId && detail.isActive)
+  //     if (contactDetail == undefined) {
+  //       throw new Error("contactDetail not found")
+  //     }
+  //     return contactDetail
+  //   }
+  //   catch (error) {
+  //     console.log(error)
+  //   }
+  // }
 
   updatePhoneNumber(value) {
     try {
-      this.validatePhoneNumber(value)
+      ContactDetail.validatePhone(value)
       this.value = value
     }
     catch (error) {
@@ -122,7 +110,7 @@ class ContactDetail {
 
   updateEmail(value) {
     try {
-      this.validateEmail(value)
+      ContactDetail.validateEmail(value)
       this.value = value
     }
     catch (error) {
@@ -130,22 +118,13 @@ class ContactDetail {
     }
   }
 
-  static updateContactDetail(contactDetailId, parameter, value) {
+   updateContactDetail(parameter, value) {
     try {
       //validate contactdetailId
-      if (typeof contactDetailId != "number") {
-        throw new Error("contactDetailId should be number")
-      }
-      if (contactDetailId < 0) {
-        throw new Error("id should not be negative")
-      }
       if (typeof parameter != "string") {
         throw new Error("parameter should be string")
       }
-      let foundContactDetail = ContactDetail.getContactDetailById(contactDetailId)
-      if (foundContactDetail == undefined) {
-        throw new Error("contact not found");
-      }
+     
       //switch
       switch (parameter) {
         case "phone":
@@ -164,24 +143,10 @@ class ContactDetail {
 
   }
 
-  static deleteContactDetail(contactDetailId) {
-    try {
-      //validate contactdetailId
-      if (typeof contactDetailId != "number") {
-        throw new Error("contactDetailId should be number")
-      }
-      if (contactDetailId < 0) {
-        throw new Error("id should not be negative")
-      }
-      let foundContactDetail = ContactDetail.getContactDetailById(contactDetailId)
-      if (foundContactDetail == undefined) {
-        throw new Error("contact not found");
-      }
-      foundContactDetail.isActive = false;
-    }
-    catch (error) {
-      console.log(error)
-    }
+   deleteContactDetail() {
+    this.isActive=false
+
+    
   }
 }
 
