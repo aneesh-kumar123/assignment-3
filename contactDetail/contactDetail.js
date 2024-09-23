@@ -1,6 +1,6 @@
 
 class ContactDetail {
-  static #allcontactDetail = []
+  // static #allcontactDetail = []
   static contactDetailId = 0
 
   constructor(contactId, type, value) {
